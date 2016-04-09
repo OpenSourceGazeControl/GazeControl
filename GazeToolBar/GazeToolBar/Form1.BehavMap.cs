@@ -5,6 +5,10 @@ namespace GazeToolBar
 {
     partial class Form1
     {
+        /// <summary>
+        /// Connect behave map with buttons
+        /// and add event to the behave map
+        /// </summary>
         private void connectBehaveMap()
         {
             Program.EyeXHost.Connect(bhavMapDoubleClick);
@@ -12,10 +16,10 @@ namespace GazeToolBar
             Program.EyeXHost.Connect(bhavMapSingleClick);
             Program.EyeXHost.Connect(bhavMapSettings);
 
-            bhavMapDoubleClick.Add(btnDoubleClick, new ActivatableBehavior(OnBtnDoubleClick));
-            bhavMapRightClick.Add(btnRightClick, new ActivatableBehavior(OnBtnRightClick));
-            bhavMapSingleClick.Add(btnSingleClick, new ActivatableBehavior(OnBtnSingleClick));
-            bhavMapSettings.Add(btnSettings, new ActivatableBehavior(OnBtnSettings));
+            bhavMapDoubleClick.Add(btnDoubleClick, new GazeAwareBehavior(OnBtnDoubleClick) { DelayMilliseconds = ValueNeverChange.DELAY_MILLISECONDS });
+            bhavMapRightClick.Add(btnRightClick, new GazeAwareBehavior(OnBtnRightClick) { DelayMilliseconds = ValueNeverChange.DELAY_MILLISECONDS });
+            bhavMapSingleClick.Add(btnSingleClick, new GazeAwareBehavior(OnBtnSingleClick) { DelayMilliseconds = ValueNeverChange.DELAY_MILLISECONDS });
+            bhavMapSettings.Add(btnSettings, new GazeAwareBehavior(OnBtnSettings) { DelayMilliseconds = ValueNeverChange.DELAY_MILLISECONDS });
         }
 
         private void OnBtnDoubleClick(object sender, EventArgs e)

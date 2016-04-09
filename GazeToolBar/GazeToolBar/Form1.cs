@@ -1,5 +1,4 @@
-﻿using Microsoft.Win32;
-using System;
+﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -7,29 +6,44 @@ namespace GazeToolBar
 {
     public partial class Form1 : ShellLib.ApplicationDesktopToolbar
     {
-        
-        private bool isOnStart;
         private Settings settings;
         private ContextMenu contextMenu;
         private MenuItem menuItemExit;
         private MenuItem menuItemStartOnOff;
-        private RegistryKey rkApp;
+        private Bitmap leftSingleClick;
+        private Bitmap rightClick;
+        private Bitmap settingIcon;
+        private Bitmap doubleClick;
 
         public Form1()
         {
+            leftSingleClick = new Bitmap(new Bitmap("Left-Click-icon.png"), ReletiveSize.btnSize);
+            rightClick = new Bitmap(new Bitmap("Right-Click-icon.png"), ReletiveSize.btnSize);
+            settingIcon = new Bitmap(new Bitmap("settings-icon.png"), ReletiveSize.btnSize);
+            doubleClick = new Bitmap(new Bitmap("Double-Click-icon.png"), ReletiveSize.btnSize);
+            //Change resolution to 800 * 600
+            ChangeResolution.ChangeScreenResolution();            
             InitializeComponent();
             Size = ReletiveSize.formSize;
-            Edge = AppBarEdges.Right;
-            rkApp = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
-            isOnStart = false;
+            AutoStart.OpenKey();
             contextMenu = new ContextMenu();
             menuItemExit = new MenuItem();
             menuItemStartOnOff = new MenuItem();
             initMenuItem();
             setBtnSize();
             connectBehaveMap();
+            Edge = AppBarEdges.Right;
+            AutoStart.IsAutoStart(settings, menuItemStartOnOff);
+            btnSingleClick.Image = leftSingleClick;
+            btnRightClick.Image = rightClick;
+            btnSettings.Image = settingIcon;
+            btnDoubleClick.Image = doubleClick;
         }
 
+        /// <summary>
+        /// Setup the context menu for
+        /// notify icon
+        /// </summary>
         private void initMenuItem()
         {
             menuItemExit.Text = "Exit";
@@ -41,6 +55,11 @@ namespace GazeToolBar
             ntficGaze.ContextMenu = contextMenu;
         }
 
+        /// <summary>
+        /// Set all the size of buttons, panel
+        /// and location of the buttons, panel.
+        /// This will make toolbar adjust itelf corespond to screen resolution
+        /// </summary>
         private void setBtnSize()
         {
             btnSingleClick.Size = ReletiveSize.btnSize;
@@ -55,31 +74,6 @@ namespace GazeToolBar
             panel.Size = ReletiveSize.panelSize;
         }
 
-        public void setAutoStartOnOff()
-        {
-            if (!isOnStart)
-            {
-                try
-                {
-                    rkApp.SetValue(ValueNeverChange.RES_NAME, Application.ExecutablePath.ToString());
-                    isOnStart = true;
-                    settings.BtnAutoStart.Text = ValueNeverChange.AUTO_START_ON;
-                    menuItemStartOnOff.Text = ValueNeverChange.AUTO_START_ON;
-                }
-                catch (UnauthorizedAccessException exception)
-                {
-                    MessageBox.Show(exception.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-            else
-            {
-                rkApp.DeleteValue(ValueNeverChange.RES_NAME, false);
-                isOnStart = false;
-                settings.BtnAutoStart.Text = ValueNeverChange.AUTO_START_OFF;
-                menuItemStartOnOff.Text = ValueNeverChange.AUTO_START_OFF;
-            }
-        }
-
         private void menuItemExit_Click(object sender, EventArgs e)
         {
             Application.Exit();
@@ -87,13 +81,28 @@ namespace GazeToolBar
 
         private void menuItemStartOnOff_Click(object sender, EventArgs e)
         {
-            setAutoStartOnOff();
+            AutoStart.setAutoStartOnOff(settings, menuItemStartOnOff);
         }
 
         private void btnSettings_Click(object sender, EventArgs e)
         {
             settings = new Settings(this);
             settings.Show();
+        }
+
+        /// <summary>
+        /// Change resolution back to its orignal resolution.
+        /// This will solve the problem that desktop won't show the taskbar properly.
+        /// </summary>
+        private void Form1_Shown(object sender, System.EventArgs e)
+        {
+            ChangeResolution.ChangeResolutionBack();
+        }
+
+        public MenuItem MenuItemStartOnOff { get { return menuItemStartOnOff; } }
+
+        public Settings Settings { get { return settings; }
+            
         }
     }
 }
