@@ -13,12 +13,14 @@ namespace Zoomer
     {
         Bitmap bmpScreenshot;
         Graphics graphics;
+        PictureBox picturebox1;
 
-        public Zoomer(Graphics graphics)
+        public Zoomer(Graphics graphics, PictureBox picturebox1)
         {
+            this.picturebox1 = picturebox1;
             this.graphics = graphics;
         }
-        public Bitmap createZoomBitmap()
+        public void createZoomBitmap()
         {
             Rectangle cropRect = new Rectangle(0, 0, 100, 100);
             //Create a new bitmap.
@@ -32,8 +34,14 @@ namespace Zoomer
 
             //Save the screenshot
             bmpScreenshot.Save("Screenshot.png", ImageFormat.Bmp);
-
-            return bmpScreenshot.Clone(cropRect, bmpScreenshot.PixelFormat); ;
+            for (int i = 0; i < 10; i++)
+            {
+                cropRect.X -= cropRect.X - i;
+                cropRect.Y -= cropRect.Y - i;
+                picturebox1.Image = bmpScreenshot.Clone(cropRect, bmpScreenshot.PixelFormat);
+                System.Threading.Thread.Sleep(1000);
+            }
+            //return 
         }
 
     }
