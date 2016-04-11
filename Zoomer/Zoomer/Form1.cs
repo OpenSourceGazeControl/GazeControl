@@ -18,7 +18,7 @@ namespace Zoomer
             InitializeComponent();
             graphics = this.CreateGraphics();
             Zoomer zoom = new Zoomer(graphics);
-            Bitmap bmp = new Bitmap("bmp.jpg");
+            Bitmap bmp = zoom.createZoomBitmap();
             pictureBox1.Image = bmp;
         }
     }
